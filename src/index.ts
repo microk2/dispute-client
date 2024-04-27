@@ -1,16 +1,26 @@
 require("dotenv").config({ path: ".env" });
-import express, { Express } from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import cors from "cors";
 import { IPartnerDisputePayload } from "./interfaces";
-import { Client } from "./classes/Client";
+
+const verifyRequest = (req: Request, res: Response, next: NextFunction) => {
+  const api_key: string | undefined = req.headers["x-api-key"] as string;
+  const secret_api_key: string | undefined = String(process.env.API_KEY);
+
+  if (api_key && secret_api_key && api_key === secret_api_key) {
+    return next();
+  }
+
+  res.status(403).send("Verify - Forbidden"); // Forbidden
+};
 
 (async () => {
   const app: Express = express();
 
-  app.use(cors({ origin: Client.allowedOrigins, optionsSuccessStatus: 200 }));
+  app.use(cors());
   app.use(express.json());
 
-  app.post("/", async (req, res) => {
+  app.post("/", verifyRequest, async (req, res) => {
     const dispute = req.body as IPartnerDisputePayload;
     if (!dispute || !dispute.dispute_id) {
       res.status(400).send("Invalid body.");
