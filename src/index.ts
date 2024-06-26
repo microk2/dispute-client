@@ -20,7 +20,7 @@ const verifyRequest = (req: Request, res: Response, next: NextFunction) => {
   app.use(cors());
   app.use(express.json());
 
-  app.post("/", verifyRequest, async (req, res) => {
+  app.post("/disputes", verifyRequest, async (req, res) => {
     const dispute = req.body as IPartnerDisputePayload;
     if (!dispute || !dispute.dispute_id) {
       res.status(400).send("Invalid body.");
