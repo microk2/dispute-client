@@ -1,1 +1,1 @@
-worker: yarn run start-dev-full
+worker: npm run start-dev-full
